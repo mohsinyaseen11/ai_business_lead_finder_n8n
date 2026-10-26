@@ -1,0 +1,1120 @@
+{
+  "name": "AI Business Lead Finder International",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 21
+            }
+          ]
+        }
+      },
+      "id": "e39d298d-2afe-4f12-822f-3bb079cb1dc3",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -5504,
+        -752
+      ],
+      "executeOnce": false,
+      "retryOnFail": true,
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "query": "={{ [\n\"small independent ecommerce clothing brands in USA official online store website\",\n\"small online shoe and footwear stores in UK official website\",\n\"independent cosmetics and skincare ecommerce stores in Canada official website\",\n\"small kids clothing and baby products online stores in USA\",\n\"independent home decor and furniture ecommerce stores in UK\",\n\"small jewelry and accessories ecommerce stores in Canada official website\",\n\"independent perfume and fragrance ecommerce stores in USA\",\n\"small bags and wallets ecommerce stores in UK official website\",\n\"independent pet supplies ecommerce stores in Canada\",\n\"small bedding and home textile online stores in USA\",\n\"independent sportswear ecommerce stores in UK official website\",\n\"small kitchenware and cooking products ecommerce stores in Canada\",\n\"independent men's grooming ecommerce stores in USA\",\n\"small women's fashion ecommerce stores in UK official website\",\n\"independent organic food ecommerce stores in Canada\"\n][Math.floor(Math.random() * 15)] }}",
+        "options": {
+          "exclude_domains": [
+            "amazon.com",
+            "amazon.co.uk",
+            "amazon.ca",
+            "ebay.com",
+            "ebay.co.uk",
+            "ebay.ca",
+            "etsy.com",
+            "walmart.com",
+            "walmart.ca",
+            "target.com",
+            "aliexpress.com",
+            "alibaba.com",
+            "temu.com",
+            "shein.com",
+            "wish.com",
+            "bestbuy.com",
+            "costco.com",
+            "homedepot.com",
+            "wayfair.com",
+            "overstock.com",
+            "facebook.com",
+            "instagram.com",
+            "pinterest.com",
+            "reddit.com",
+            "quora.com",
+            "twitter.com",
+            "amazon.com, amazon.co.uk, amazon.ca, ebay.com, ebay.co.uk, ebay.ca, etsy.com, walmart.com, walmart.ca, target.com, aliexpress.com, alibaba.com, temu.com, shein.com, wish.com, bestbuy.com, costco.com, homedepot.com, wayfair.com, overstock.com, argos.co.uk, johnlewis.com, next.co.uk, asos.com, zalando.co.uk, tesco.com, sainsburys.co.uk, boots.com, canadiantire.ca, sephora.com, ulta.com, nordstrom.com, macys.com, zappos.com, kijiji.ca, gumtree.com, craigslist.org, facebook.com, instagram.com, pinterest.com, reddit.com, quora.com, twitter.com, x.com, tiktok.com, youtube.com, linkedin.com, medium.com, wikipedia.org, forbes.com, nytimes.com, businessinsider.com, techcrunch.com, buzzfeed.com, vogue.com, thespruce.com, healthline.com, theguardian.com, bbc.co.uk, which.co.uk, shopify.com, bigcommerce.com, wix.com, squarespace.com, woocommerce.com, wordpress.com, blogspot.com, trustpilot.com, yelp.com, yellowpages.com, g2.com, capterra.com, crunchbase.com, glassdoor.com, indeed.com, bbb.org, tripadvisor.com"
+          ],
+          "max_results": 20,
+          "search_depth": "fast"
+        }
+      },
+      "id": "72ca0dbe-e3c0-40a1-8b89-f05aeb2aaf2c",
+      "name": "Search the web",
+      "type": "@tavily/n8n-nodes-tavily.tavily",
+      "typeVersion": 2,
+      "position": [
+        -5136,
+        -752
+      ],
+      "credentials": {
+        "tavilyApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "results",
+        "options": {}
+      },
+      "id": "2fd98bfc-9b41-4211-8e0a-3c31632720bf",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -4912,
+        -752
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "4e5fe50a-cf63-4b5f-8fa3-8883da5c0cc1",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -4512,
+        -752
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "title",
+              "cssSelector": "title"
+            },
+            {
+              "key": "h1",
+              "cssSelector": "h1"
+            },
+            {
+              "key": "h2",
+              "cssSelector": "h2"
+            },
+            {
+              "key": "h3",
+              "cssSelector": "h3"
+            },
+            {
+              "key": "h4",
+              "cssSelector": "h4"
+            },
+            {
+              "key": "meta_description",
+              "cssSelector": "meta[name=\"description\"]",
+              "returnValue": "attribute",
+              "attribute": "content"
+            },
+            {
+              "key": "emails",
+              "cssSelector": "a[href^=\"mailto:\"]",
+              "returnValue": "attribute",
+              "attribute": "href"
+            },
+            {
+              "key": "contact_links",
+              "cssSelector": "a[href*=\"contact\"]",
+              "returnValue": "attribute",
+              "attribute": "href"
+            },
+            {
+              "key": "about_links",
+              "cssSelector": "a[href*=\"about\"]",
+              "returnValue": "attribute",
+              "attribute": "href"
+            },
+            {
+              "key": "product_links",
+              "cssSelector": "a[href*=\"/products/\"], a[href*=\"/product/\"]",
+              "returnValue": "attribute",
+              "attribute": "href"
+            },
+            {
+              "key": "faq_links",
+              "cssSelector": "a[href*=\"faq\"], a[href*=\"help\"]",
+              "returnValue": "attribute",
+              "attribute": "href"
+            },
+            {
+              "key": "social_links",
+              "cssSelector": "a[href*=\"instagram.com\"], a[href*=\"facebook.com\"], a[href*=\"linkedin.com\"]",
+              "returnValue": "attribute",
+              "attribute": "href"
+            },
+            {
+              "key": "chat_widgets",
+              "cssSelector": "iframe",
+              "returnValue": "attribute",
+              "attribute": "src"
+            },
+            {
+              "key": "chat_scripts",
+              "cssSelector": "script[src*=\"intercom\"], script[src*=\"tidio\"], script[src*=\"zendesk\"], script[src*=\"crisp\"], script[src*=\"tawk\"], script[src*=\"drift\"], script[src*=\"hubspot\"]",
+              "returnValue": "attribute",
+              "attribute": "src"
+            },
+            {
+              "key": "chat_links",
+              "cssSelector": "a[href*=\"intercom\"], a[href*=\"tawk\"], a[href*=\"tidio\"], a[href*=\"crisp\"]",
+              "returnValue": "attribute",
+              "attribute": "href"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c9e0ca3a-8834-42d7-a93b-f986df9a3daf",
+      "name": "HTML",
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        -4176,
+        -752
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f063c379-fb1f-421e-b6ef-f0e25b130bf6",
+              "name": "website urls",
+              "value": "={{ $('Split Out').item.json.url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "eaf431ee-007f-4768-8b9a-3c5f007b8786",
+      "name": "Edit Fields1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -3792,
+        -752
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# ROLE\n\nYou are an expert B2B lead qualification analyst. Your task is to evaluate potential clients for an independent developer who sells customer-service and sales chatbots.\n\nPrioritize small and medium-sized ecommerce businesses in the USA, UK, and Canada that could realistically benefit from a website chatbot.\n\nAnalyze only the website data supplied below. Qualify leads conservatively, extract explicitly available contact information, identify chatbot indicators, and explain any uncertainty.\n\nNever invent business details, email addresses, phone numbers, website URLs, chatbot status, or customer-service problems.\n\n# INPUT WEBSITE DATA\n\n## Website identity\n\nPage title:\n{{ $json[\"title\"] }}\n\nMain heading (H1):\n{{ $json[\"h1\"] }}\n\nOther headings (H2):\n{{ $json[\"h2\"] }}\n\nOther headings (H3):\n{{ $json[\"h3\"] }}\n\nOther headings (H4):\n{{ $json[\"h4\"] }}\n\nWebsite URL:\n{{ $json[\"website urls\"] }}\n\nMeta description:\n{{ $json[\"meta_description\"] }}\n\n## Extracted website links\n\nContact page links:\n{{ $json[\"contact_links\"] }}\n\nAbout page links:\n{{ $json[\"about_links\"] }}\n\nProduct links:\n{{ $json[\"product_links\"] }}\n\nFAQ or help links:\n{{ $json[\"faq_links\"] }}\n\nSocial media links:\n{{ $json[\"social_links\"] }}\n\n## Extracted contact information\n\nEmail links or email-related values:\n{{ $json[\"emails\"] }}\n\nPhone links:\n{{ $json[\"phone_links\"] }}\n\nWhatsApp links:\n{{ $json[\"whatsapp_links\"] }}\n\n## Chatbot detection evidence\n\nExisting chat-related HTML elements:\n{{ $json[\"chat_elements\"] }}\n\nChat iframe URLs, if available:\n{{ $json[\"chat_iframes\"] }}\n\nChat platform script URLs, if available:\n{{ $json[\"chat_scripts\"] }}\n\nChat-related links, if available:\n{{ $json[\"chat_links\"] }}\n\n# IMPORTANT INPUT RULES\n\n1. Some fields may be empty, missing, null, or unavailable.\n2. Treat missing fields as unavailable evidence, not proof that a feature does not exist.\n3. The supplied website URL identifies the website whose extracted data is being evaluated.\n4. If the website URL is missing, use an empty string for website_url. Do not guess or reconstruct the URL from a business name or email domain.\n5. If the title or heading contains \"Access Denied\", \"You don't have permission to access\", or a similar access-block message, treat the extraction as failed.\n6. Never interpret \"Access Denied\" as a business name, product, or valid ecommerce heading.\n7. Do not qualify a website using an access-denied response alone.\n8. Do not combine evidence from different businesses or websites.\n9. Analyze only the supplied data. Do not claim to have browsed, visually inspected, or interacted with the live website.\n10. Do not assume that a business is based in the USA, UK, or Canada solely because its domain ends in .com, .ca, or another country-specific domain.\n11. A missing chatbot indicator does not prove that no chatbot exists.\n12. The intended outreach channel is Gmail. WhatsApp is optional supplementary contact information.\n13. Preserve all input evidence needed for contact extraction. Do not omit an email just because it is unrelated to the chatbot qualification decision.\n\n# STEP 1: IDENTIFY THE BUSINESS\n\nIdentify the business from the supplied title, headings, meta description, and website URL.\n\nPrioritize independent ecommerce stores selling physical products, such as:\n\n- Clothing, footwear, and accessories\n- Kitchenware and home products\n- Cosmetics and skincare\n- Jewellery and gifts\n- Children's products\n- Pet products\n- Sports products\n- Other independent online retail stores\n\nDeprioritize large established brands, enterprise retailers, major marketplaces, directories, blogs, informational websites, unrelated websites, and error pages.\n\nDo not assume a company is small or medium-sized merely because its website looks simple or has a limited number of links.\n\nIf the business name cannot be reliably established, use \"Unknown\".\n\n# STEP 2: DETERMINE THE TARGET COUNTRY\n\nUse exactly one of these values:\n\n- \"USA\"\n- \"UK\"\n- \"Canada\"\n- \"Unknown\"\n\nUse only the supplied evidence, including explicit addresses, country-specific contact information, shipping information, currency, or other clear geographic indicators.\n\nA country-specific domain may support a conclusion but is not sufficient on its own.\n\nIf the country cannot be established, use \"Unknown\".\n\nDo not qualify a lead solely because the website is accessible internationally.\n\n# STEP 3: ESTIMATE BUSINESS SIZE\n\nUse exactly one value:\n\n- \"Small\"\n- \"Medium\"\n- \"Large\"\n- \"Unknown\"\n\nUse only reliable evidence in the supplied data.\n\nDo not infer business size from design, product category, domain name, or number of links.\n\nIf business size is unclear, use \"Unknown\". An unknown size does not automatically make a business unsuitable, but it limits qualification confidence.\n\nClearly established large brands must be deprioritized.\n\n# STEP 4: VERIFY ECOMMERCE ACTIVITY\n\nLook for evidence such as:\n\n- Product links containing /products/ or similar product paths\n- Product category links\n- Product-related headings and descriptions\n- Evidence of online retail activity in the supplied fields\n- FAQ links suggesting customer support or purchasing questions\n\nA product link is useful evidence but does not, by itself, guarantee that checkout is operational.\n\nA page title, social media link, or general marketing description alone is insufficient to establish a functioning ecommerce store.\n\nIf ecommerce activity cannot be established, do not mark the lead \"Qualified\".\n\n# STEP 5: EXTRACT EMAIL ADDRESSES — HIGH PRIORITY\n\nYour task is to extract every explicitly available email address from the supplied input. Email extraction must be handled independently of lead qualification.\n\nInspect the `emails` field first. Also inspect the other supplied fields for explicitly visible email addresses, including headings, meta descriptions, and other extracted text.\n\nThe `emails` field may contain any of the following formats:\n\n- `info@example.com`\n- `mailto:info@example.com`\n- `mailto:info@example.com,mailto:sales@example.com`\n- An array containing one or more email values\n- Text containing an email address alongside other information\n- An empty value, null, or a missing field\n\n## Email extraction rules\n\n1. Extract every email address explicitly present in the supplied data.\n2. If an email value begins with `mailto:`, remove only that prefix to obtain the email address.\n3. Remove surrounding whitespace and common URL or text separators where appropriate.\n4. If the value contains multiple email addresses, extract all of them.\n5. If an input field is an array, inspect each element separately.\n6. If an input field is a string containing several email links, inspect the complete string rather than returning only the first address.\n7. Preserve the original spelling and casing of each email address.\n8. Remove duplicate addresses without losing distinct addresses.\n9. Do not include `mailto:` in the final email address.\n10. Do not invent or reconstruct an email from the website URL or domain.\n11. Do not assume that `info@`, `support@`, `sales@`, or `hello@` addresses exist.\n12. Do not treat a contact page link as proof that an email address exists.\n13. Do not discard a valid email because the lead is rejected, unqualified, or needs verification.\n14. Do not omit an extracted email merely because it does not appear relevant to chatbot sales.\n15. If an email address is explicitly supplied, include it in `email_addresses` even when other business details remain unknown.\n16. If no email address can be extracted from any supplied field, return an empty array `[]`.\n17. Do not claim that no email exists anywhere on the live website merely because no email appears in the supplied data.\n18. Do not claim an email is deliverable or verified as active unless the supplied evidence establishes this.\n\n## Important email examples\n\nInput:\n\n`mailto:info@example.com`\n\nExpected output:\n\n`[\"info@example.com\"]`\n\nInput:\n\n`mailto:info@example.com, mailto:sales@example.com`\n\nExpected output:\n\n`[\"info@example.com\", \"sales@example.com\"]`\n\nInput:\n\n`No email information available`\n\nExpected output:\n\n`[]`\n\n**Critical rule:** Always populate `email_addresses` from the supplied contact evidence. Do not leave it empty when an explicit email address is present in the input.\n\n# STEP 6: EXTRACT PHONE NUMBERS\n\nExtract only phone numbers explicitly present in the supplied data.\n\nInspect the phone_links field and any other supplied fields containing actual phone numbers.\n\nRules:\n\n1. Do not invent or infer phone numbers.\n2. Do not interpret prices, postal codes, product codes, or order numbers as phone numbers.\n3. Remove duplicate numbers.\n4. Preserve the displayed number as accurately as possible.\n5. Return numbers as a JSON array of strings.\n6. If no phone number is supplied, return [].\n7. Do not assume that a phone number supports WhatsApp.\n\n# STEP 7: EXTRACT WHATSAPP LINKS\n\nReturn a WhatsApp URL only if an actual URL is explicitly present in the supplied data.\n\nExamples include:\n\n- https://wa.me/...\n- https://api.whatsapp.com/send?phone=...\n- https://web.whatsapp.com/...\n\nRules:\n\n1. Inspect whatsapp_links first.\n2. If a valid WhatsApp URL is present, return the first valid URL exactly as supplied.\n3. Do not construct a WhatsApp URL from a phone number.\n4. Do not treat generic phone, email, social media, or contact links as WhatsApp links.\n5. If no WhatsApp URL is present, return an empty string: \"\".\n6. WhatsApp availability is not required for lead qualification because Gmail is the primary outreach channel.\n\n# STEP 8: DETECT EXISTING CHAT INTERFACES\n\nInspect the supplied chat-related HTML elements, chat_iframes, chat_scripts, and chat_links fields when available.\n\nPossible indicators include recognizable platforms such as:\n\n- Tawk.to\n- Crisp\n- Intercom\n- Tidio\n- Zendesk Chat\n- Drift\n- LiveChat\n- Freshchat\n- Gorgias\n- Chatwoot\n- Kommunicate\n- Botpress\n\nUse exactly one string value for chatbot_interface_present:\n\n- \"true\": Clear evidence of a chat widget or chatbot exists in the supplied data.\n- \"false\": The supplied data contains sufficient inspection evidence to support the limited conclusion that no chat interface was detected.\n- \"unknown\": Evidence is missing, incomplete, or inconclusive.\n\nRules:\n\n1. If all chatbot-related fields are missing or empty, use \"unknown\".\n2. Do not classify ordinary phone, email, contact, or social media links as chatbots.\n3. A live-chat widget is not necessarily an AI chatbot.\n4. Do not claim that an existing chatbot uses AI unless the supplied evidence establishes this.\n5. Do not claim that a website has no chatbot merely because no chat indicators were extracted.\n6. Chat widgets may load dynamically through JavaScript and may not appear in static HTML.\n7. An \"Access Denied\" page must not be used to conclude that a chatbot is absent.\n\n# STEP 9: ESTIMATE CHATBOT OPPORTUNITY\n\nPotential chatbot use cases include:\n\n- Product discovery and recommendations\n- Product information and comparisons\n- Product size, colour, and availability questions\n- Shipping and delivery FAQs\n- Returns and refund policies\n- Store policies and frequently asked questions\n- Customer support and sales enquiries\n\nUse exactly one value for potential_chatbot_need:\n\n- \"high\": The supplied evidence supports multiple credible use cases and meaningful customer-service or sales complexity.\n- \"medium\": At least one plausible use case exists, but evidence of unmet need or enquiry volume is limited.\n- \"low\": Ecommerce activity is unverified, the website is ineligible, or little evidence supports chatbot suitability.\n\nDo not assign \"high\" simply because a business sells products, has an email address, or has no detected chatbot.\n\nIf an existing chat interface is detected, identify a distinct potential opportunity before recommending another chatbot. Do not assume the existing solution is ineffective.\n\n# STEP 10: CALCULATE LEAD SCORE\n\nAssign an integer score from 1 to 10 using the following components:\n\nA. Target-customer suitability: 0–4 points.\n\nB. Credible chatbot use-case potential: 0–3 points.\n\nC. Ecommerce evidence quality: 0–2 points.\n\nD. Direct outreach relevance, including a legitimate business email when available: 0–1 point.\n\nApply these restrictions:\n\n- Clearly ineligible websites: maximum score 3.\n- Access-denied pages without usable business evidence: maximum score 3.\n- Blog or article pages used as the target: maximum score 3.\n- Ecommerce activity not established: maximum score 5.\n- Insufficient or contradictory evidence: maximum score 4.\n- Clearly established large brands: maximum score 3.\n- A score of 7 or higher requires clear ecommerce evidence, a credible chatbot opportunity, and reasonable evidence that the business fits the target profile.\n- An unknown business size does not automatically disqualify a prospect.\n- Missing email does not prove that the business is unsuitable, but Gmail outreach is not ready.\n- If the calculated score is 0 or 1, return 1.\n\nDo not award points for evidence that is not present.\n\n# STEP 11: ASSIGN QUALIFICATION STATUS\n\nUse exactly one value:\n\n\"Qualified\"\n\nUse only when:\n\n- Lead score is 7–10.\n- Genuine ecommerce activity is established.\n- Available evidence supports a suitable small or medium-sized business.\n- A credible chatbot opportunity exists.\n- Target country and essential qualification details are sufficiently verified.\n\n\"Needs Verification\"\n\nUse when:\n\n- The business may be suitable, but country, size, ecommerce status, chatbot status, or another important detail remains uncertain.\n- More research is needed before outreach.\n- The business appears suitable, but no usable email address has been extracted.\n- The supplied HTML is incomplete or contains conflicting information.\n\n\"Rejected\"\n\nUse when:\n\n- The website is clearly ineligible, unrelated, or unsuitable.\n- Ecommerce activity cannot be established from the available evidence.\n- The business is a clearly established large brand outside the target profile.\n- No relevant chatbot opportunity is supported.\n\nDo not reject a business solely because an existing chatbot is detected.\n\nIf the website returns an access-denied page and no other usable business evidence is supplied, choose \"Needs Verification\" or \"Rejected\" according to the available evidence. Never mark it \"Qualified\".\n\n# STEP 12: WRITE THE EVIDENCE AND RECOMMENDATION\n\nIn website_evidence, summarize actual supplied evidence:\n\n- Business name and website URL, when available\n- Headings and meta description\n- Product and FAQ links\n- Evidence of ecommerce activity\n- Geographic indicators\n- Extracted email addresses and phone numbers\n- Existing chat indicators, if present\n- Missing or contradictory information\n- Any access-denied or extraction failure\n\nIn score_reason, explain the lead score, the suitability of the business, the evidence supporting the chatbot opportunity, and any unresolved details.\n\nIn suggested_chatbot_use_case, recommend realistic potential chatbot features based on the supplied business evidence.\n\nDo not claim that a business has high sales, high traffic, a large support workload, poor customer service, or an existing technical integration unless the data explicitly supports the claim.\n\nDo not promise advanced integrations unless their feasibility is established by the available evidence.\n\n# STEP 13: OUTPUT SCHEMA\n\nReturn exactly one valid JSON object with exactly these 15 fields:\n\n{\n  \"business_name\": \"string\",\n  \"website_url\": \"string\",\n  \"target_country\": \"Unknown\",\n  \"business_type\": \"string\",\n  \"business_size\": \"Unknown\",\n  \"qualification_status\": \"Needs Verification\",\n  \"website_evidence\": \"string\",\n  \"chatbot_interface_present\": \"unknown\",\n  \"potential_chatbot_need\": \"medium\",\n  \"lead_score\": 5,\n  \"score_reason\": \"string\",\n  \"suggested_chatbot_use_case\": \"string\",\n  \"email_addresses\": [],\n  \"phone_numbers\": [],\n  \"whatsapp_link\": \"\"\n}\n\n# FINAL OUTPUT VALIDATION\n\n- Return JSON only. Do not include Markdown, code fences, introductions, or explanations outside the JSON.\n- Return one JSON object, not an array.\n- Include all 15 fields and no additional fields.\n- Preserve the exact supplied website URL in website_url. If missing, return an empty string rather than guessing.\n- Use \"Unknown\" when the business name or a relevant detail cannot be established.\n- target_country must be \"USA\", \"UK\", \"Canada\", or \"Unknown\".\n- business_size must be \"Small\", \"Medium\", \"Large\", or \"Unknown\".\n- qualification_status must be \"Qualified\", \"Needs Verification\", or \"Rejected\".\n- chatbot_interface_present must be the string \"true\", \"false\", or \"unknown\".\n- potential_chatbot_need must be \"high\", \"medium\", or \"low\".\n- lead_score must be an integer from 1 to 10, not a string.\n- email_addresses must be an array of strings containing all explicitly extracted email addresses. Remove any `mailto:` prefix and duplicates. Use [] only when no email address is present in the supplied data.\n- phone_numbers must be an array of strings containing only explicitly extracted phone numbers. Use [] if none are found.\n- whatsapp_link must contain an exact WhatsApp URL found in the supplied data, or \"\" if none is found.\n- Never invent an email address, phone number, website URL, or WhatsApp URL.\n- Ensure valid JSON syntax and escaping.\n- If the page is an access-denied response, do not misidentify the error page as the business.\n- If the URL and extracted business evidence appear to refer to different websites, mark the lead \"Needs Verification\" and explain the mismatch.\n- Return all 15 required fields every time.\n- Before returning the JSON, cross-check `email_addresses` against every supplied input field one final time.\n- If a valid email address appears anywhere in the supplied data, include it in `email_addresses` even if the lead is \"Needs Verification\" or \"Rejected\".\n- Do not replace a missing email with a guessed email, and do not replace an available email with an empty array.",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "id": "af09e901-a93a-48aa-aa4f-882d46b10195",
+      "name": "Basic LLM Chain",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -3568,
+        -752
+      ]
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.1-flash-lite",
+        "options": {}
+      },
+      "id": "478c74f8-c369-440f-b2e1-b31daeabb36f",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        -3568,
+        -528
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": null,
+          "name": "YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"business_name\": \"abc\",\n  \"website_url\": \"https://example.com\",\n  \"target_country\": \"Unknown\",\n  \"business_type\": \"Kids Clothing Brand\",\n  \"business_size\": \"Small\",\n  \"qualification_status\": \"Needs Verification\",\n  \"website_evidence\": \"The supplied data describes a kids clothing brand and mentions product listings and category links. The target country and ecommerce activity are not sufficiently verified.\",\n  \"chatbot_interface_present\": \"unknown\",\n  \"potential_chatbot_need\": \"medium\",\n  \"lead_score\": 5,\n  \"score_reason\": \"The business may benefit from product size assistance and delivery FAQs, but the target country and business suitability require verification.\",\n  \"suggested_chatbot_use_case\": \"Product size assistance, product questions, and delivery FAQs.\",\n  \"email_addresses\": [],\n  \"phone_numbers\": [\n    \"+10000000000\"\n  ],\n  \"whatsapp_link\": \"https://api.whatsapp.com/send/?phone=%2B10000000000\"\n}"
+      },
+      "id": "36a2cfc2-8076-4658-a9dc-e1215d3b96b0",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -3392,
+        -512
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f57f5a36-6b6e-4ca3-aebc-894cacf0de86",
+              "leftValue": "={{ $json.output.lead_score }}",
+              "rightValue": 5,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "92eb84de-2de6-4785-b2e6-4c4c8aad4667",
+              "leftValue": "={{ $json.output.email_addresses[0] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "ce84ca8b-a65d-4dfa-b5b4-2db80b341451",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -3216,
+        -752
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Website URL": "={{ $json.output.website_url }}",
+            "Business Name": "={{ $json.output.business_name }}",
+            "Country": "={{ $json.output.target_country }}",
+            "Email": "={{ $json.output.email_addresses }}",
+            "Business Type": "={{ $json.output.business_type }}",
+            "Business Size": "={{ $json.output.business_size }}",
+            "Lead Score": "={{ $json.output.lead_score }}",
+            "Qualification Status": "={{ $json.output.qualification_status }}",
+            "Phone": "={{ $json.output.phone_numbers }}",
+            "WhatsApp Link": "={{ $json.output.whatsapp_link }}",
+            "Suggested Use Case": "={{ $json.output.suggested_chatbot_use_case }}",
+            "Score Reason": "={{ $json.output.score_reason }}",
+            "Website Evidence": "={{ $json.output.website_evidence }}",
+            "Chatbot Present": "={{ $json.output.chatbot_interface_present }}",
+            "Chatbot Need": "={{ $json.output.potential_chatbot_need }}"
+          },
+          "matchingColumns": [
+            "Website URL"
+          ],
+          "schema": [
+            {
+              "id": "Business Name",
+              "displayName": "Business Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Website URL",
+              "displayName": "Website URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Country",
+              "displayName": "Country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Message Sent",
+              "displayName": "Message Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Business Type",
+              "displayName": "Business Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Business Size",
+              "displayName": "Business Size",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Lead Score",
+              "displayName": "Lead Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Qualification Status",
+              "displayName": "Qualification Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "WhatsApp Link",
+              "displayName": "WhatsApp Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Chatbot Present",
+              "displayName": "Chatbot Present",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Chatbot Need",
+              "displayName": "Chatbot Need",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Suggested Use Case",
+              "displayName": "Suggested Use Case",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Score Reason",
+              "displayName": "Score Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Website Evidence",
+              "displayName": "Website Evidence",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "af4f2103-8717-42a8-8468-b97b9c52305d",
+      "name": "Append or update row in sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -2992,
+        -752
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ROLE\nYou write ONE short cold outreach email for Mohsin Yaseen, an independent developer who builds custom customer-support chatbots for ecommerce websites. Use ONLY the business information supplied below.\n\nBUSINESS INFORMATION\nBusiness name: {{ $json[\"Business Name\"] }}\nWebsite: {{ $json[\"Website URL\"] }}\nBusiness type: {{ $json[\"Business Type\"] }}\nWebsite evidence: {{ $json[\"Website Evidence\"] }}\nSuggested use case: {{ $json[\"Suggested Use Case\"] }}\nRecipient email: {{ $json[\"Email\"] }}\n\nWHAT THE CHATBOT CAN DO (the ONLY things you may mention)\n- Answers customer questions using the business's own information: FAQs, shipping and delivery policy, return and exchange policy, payment methods, contact and store details.\n- Answers product and price questions as listed in the information the business provides.\n- Works as a chat widget on the business's website.\n- If an answer is not in the business's information, it points the customer to the business's contact details.\n\nNEVER MENTION OR IMPLY\n- Order tracking, order status or shipment updates; placing, changing or cancelling orders; payments; refunds\n- Subscriptions, auto-delivery, bundle or account management, customer profiles, changing or pausing any customer plan\n- Live stock or inventory checks, real-time data, CRM or any connection to the business's systems\n- Personalised advice (skin, health, grooming or sizing recommendations); the bot only repeats information the business provides\n- Recommending products from a live catalogue, or guiding visitors to specific website pages\n- WhatsApp, Instagram or Facebook chatbots; human handoff or live agents\n- 24/7 availability, instant replies, more sales, lower costs, guaranteed results, prices or any numbers\n- That you have built, tested or demoed anything for them, or that you inspected their website or confirmed they lack a chatbot\nIf the suggested use case or website evidence contains anything on this list, ignore that part. Never tie a chatbot capability to a specific product feature or service the business offers (for example a bundle or subscription). A specific product or category may be named only as a detail showing you looked at their store.\n\nEMAIL RULES\n- Simple, natural, professional English. No emojis, no hype, no flattery, no filler like \"I hope this finds you well\".\n- Body about 90 to 110 words including greeting and sign-off.\n- Structure: greeting, who you are in one sentence, one relevant detail about their store from the evidence (\"I came across your ... store\"), what you could build (allowed capabilities only, framed as a proposal), a polite question asking if they would be open to a brief discussion, and one short line saying that if it is not relevant they can tell you and you will not follow up.\n- Subject: plain and specific, under 8 words, for example \"Chatbot for [Business Name] customer questions\". No \"Re:\", no exclamation marks, no claims.\n- Greeting: \"Hello [Business Name] Team,\" or \"Hello,\" if the name is Unknown. Do not guess a name.\n- Do not invent business facts, results, testimonials, prices, certifications or credentials.\n- End the email with exactly:\n\nBest regards,\nMohsin Yaseen\n\n- No company name, phone number, job title or extra signature details.\n- Before returning, check the draft against the NEVER list and remove anything that conflicts.\n\nRECIPIENT EMAIL RULES\n- Copy the recipient email exactly as supplied. If it is an array or contains several addresses, use the first non-empty one. Trim whitespace but never modify, guess or reconstruct it.\n- If no usable email is supplied, return an empty string.\n\nOUTPUT\nReturn valid JSON only, no Markdown, no explanation, exactly these 3 string fields:\n{\n  \"subject\": \"<subject line>\",\n  \"message\": \"<complete email with greeting, body, closing question, opt-out line and sign-off>\",\n  \"recipient_email\": \"<exact recipient email or empty string>\"\n}",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "id": "524831e1-a97d-4e5e-980a-095bf88ad73b",
+      "name": "Basic LLM Chain1",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -2320,
+        -752
+      ]
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.1-flash-lite",
+        "options": {}
+      },
+      "id": "53f87d18-8fe9-4f37-b741-168c63105ece",
+      "name": "Google Gemini Chat Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        -2624,
+        -544
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": null,
+          "name": "YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "\n{\n  \"subject\": \"Enhancing the customer experience at Example Store\",\n  \"message\": \"Dear Example Store Team,\\n\\nI am a developer specializing in building custom chatbots for ecommerce retailers. I have been following your site and appreciate your collection of high-quality kitchenware like popular brands.\\n\\nI am reaching out to see if you would be interested in a custom chatbot to support your customers. I can build a tool designed to answer common product care questions, explain your return policies, and help shoppers navigate complex choices, such as selecting the right espresso machine. A custom chatbot acts as an automated guide to help visitors find the information they need quickly.\\n\\nWould you be open to a brief discussion about how this might fit your website?\\n\\nBest regards,\\nYour Name\",\n  \"recipient_email\": \"info@example.com\"\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -2416,
+        -544
+      ],
+      "id": "a0ee2a35-9f09-4461-95aa-1f29d00a5c3c",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Website URL": "={{ $('Edit Fields').item.json.website_url }}",
+            "Message Sent": "Sent"
+          },
+          "matchingColumns": [
+            "Website URL"
+          ],
+          "schema": [
+            {
+              "id": "Business Name",
+              "displayName": "Business Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Website URL",
+              "displayName": "Website URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Country",
+              "displayName": "Country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Message Sent",
+              "displayName": "Message Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Business Type",
+              "displayName": "Business Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Business Size",
+              "displayName": "Business Size",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lead Score",
+              "displayName": "Lead Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Qualification Status",
+              "displayName": "Qualification Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "WhatsApp Link",
+              "displayName": "WhatsApp Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Chatbot Present",
+              "displayName": "Chatbot Present",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Chatbot Need",
+              "displayName": "Chatbot Need",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Suggested Use Case",
+              "displayName": "Suggested Use Case",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Score Reason",
+              "displayName": "Score Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Website Evidence",
+              "displayName": "Website Evidence",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1488,
+        -752
+      ],
+      "id": "9cae7621-20aa-4533-914a-18e458996676",
+      "name": "Append or update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6958e58c-7b13-4140-9a76-7edad38609b5",
+              "name": "website_url",
+              "value": "={{ $('Append or update row in sheet').item.json['Website URL'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -1968,
+        -752
+      ],
+      "id": "24f2784b-ca56-452e-ad21-bf39c98df57c",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.output.recipient_email }}",
+        "subject": "={{ $json.output.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.output.message }}",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "Mohsin Yaseen"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -1760,
+        -752
+      ],
+      "id": "80c495fd-d9fe-44ad-aa42-e4077084855c",
+      "name": "Send a message",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f661aee5-841b-46f3-b94d-9ae0b2adcd54",
+              "leftValue": "={{ $json['Message Sent'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -2544,
+        -752
+      ],
+      "id": "804e1e4b-5e76-43fb-a04d-5e55782d2de2",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Website URL",
+              "lookupValue": "={{ $json['Website URL'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -2768,
+        -752
+      ],
+      "id": "a961f4c5-30a7-47dc-bd44-0d29e48edeac",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_CREDENTIAL_NAME"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Search the web",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search the web": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}
